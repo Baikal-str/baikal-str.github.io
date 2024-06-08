@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Pages on Комната инженера | Ivan Gonyak</title>
+        <link>http://localhost:1313/page/</link>
+        <description>Recent content in Pages on Комната инженера | Ivan Gonyak</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en</language>
+        <copyright>Ivan Gonyak</copyright>
+        <lastBuildDate>Wed, 28 Feb 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/page/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Архив</title>
+        <link>http://localhost:1313/archives/</link>
+        <pubDate>Wed, 28 Feb 2024 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/archives/</guid>
+        <description></description>
+        </item>
+        <item>
+        <title>Обо мне</title>
+        <link>http://localhost:1313/%D0%BE%D0%B1%D0%BE-%D0%BC%D0%BD%D0%B5/</link>
+        <pubDate>Wed, 28 Feb 2024 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/%D0%BE%D0%B1%D0%BE-%D0%BC%D0%BD%D0%B5/</guid>
+        <description>&lt;h1 id=&#34;моё-имя-гоняк-иван-я-инженер-dba&#34;&gt;Моё имя Гоняк Иван. Я инженер DBA.
+&lt;/h1&gt;&lt;h2 id=&#34;linuxdbadbops-для-меня-и-хобби-и-работа&#34;&gt;Linux/DBA/DBOps для меня и хобби и работа.
+&lt;/h2&gt;&lt;hr&gt;
+&lt;h2 id=&#34;основные-направления-моей-деятельности&#34;&gt;Основные направления моей деятельности:
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;DBOps и администрироване Microsoft SQL Server, PostgreSQL, Redis.&lt;/li&gt;
+&lt;li&gt;Автоматизация развёртывания кластерных решений с использованием Ansible, Terraform.&lt;/li&gt;
+&lt;li&gt;Автоматизация различных задач на скриптах PowerShell и Bash.&lt;/li&gt;
+&lt;li&gt;Организация мониторинга инфраструктуры и показателей информационных систем и платформ в частности на базе Prometheus/Zabbix, Grafana.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;Высокую вовлечённость в поставленные задачи считаю самым важным своим качеством. Мне нравится изучать внутреннее устройство того, с чем я работаю. Это одновременно делает мои навыки разработки и решения бизнес-задач более эффективными.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;с-чем-работаю&#34;&gt;С чем работаю:
+&lt;/h2&gt;&lt;h3 id=&#34;devops&#34;&gt;DevOps
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;*.nix / Windows&lt;/li&gt;
+&lt;li&gt;Bash, PowerShell&lt;/li&gt;
+&lt;li&gt;Docker&lt;/li&gt;
+&lt;li&gt;Ansible, SaltStack&lt;/li&gt;
+&lt;li&gt;Terraform&lt;/li&gt;
+&lt;li&gt;Rundeck&lt;/li&gt;
+&lt;li&gt;Prometheus, Zabbix, Grafana&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;системы-управления-базами-данных&#34;&gt;Системы управления базами данных
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;SQL Server, AlwaysOn.&lt;/li&gt;
+&lt;li&gt;PostgreSQL(Patroni, Etcd, PgBouncer)&lt;/li&gt;
+&lt;li&gt;Redis&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        <item>
+        <title>Поиск</title>
+        <link>http://localhost:1313/search/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>http://localhost:1313/search/</guid>
+        <description></description>
+        </item>
+        
+    </channel>
+</rss>
