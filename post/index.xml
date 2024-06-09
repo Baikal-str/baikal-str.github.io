@@ -8,12 +8,12 @@
         <language>en</language>
         <copyright>Ivan Gonyak</copyright>
         <lastBuildDate>Sun, 09 Jun 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" /><item>
-        <title>Копирование базы данных PostgreSQL через Rundeck</title>
-        <link>http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/</link>
+        <title>Копирование базы данных PostgreSQL используя Rundeck</title>
+        <link>http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/</link>
         <pubDate>Sun, 09 Jun 2024 00:00:00 +0000</pubDate>
         
-        <guid>http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/</guid>
-        <description>&lt;img src="http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609155015.png" alt="Featured image of post Копирование базы данных PostgreSQL через Rundeck" /&gt;&lt;h2 id=&#34;задача-копирование-базы-данных-postgresql-через-rundeck&#34;&gt;Задача: Копирование базы данных PostgreSQL через Rundeck
+        <guid>http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/</guid>
+        <description>&lt;img src="http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015.png" alt="Featured image of post Копирование базы данных PostgreSQL используя Rundeck" /&gt;&lt;h2 id=&#34;задача-копирование-базы-данных-postgresql-используя-rundeck&#34;&gt;Задача: Копирование базы данных PostgreSQL используя Rundeck
 &lt;/h2&gt;&lt;h3 id=&#34;запрос&#34;&gt;Запрос
 &lt;/h3&gt;&lt;p&gt;Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки.
 Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков.
@@ -41,10 +41,10 @@
 &lt;li&gt;Имя базы на сервере источнике&lt;/li&gt;
 &lt;li&gt;Сервер назначения&lt;/li&gt;
 &lt;li&gt;Имя базы на сервере назначения
-&lt;img src=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609154457.png&#34;
+&lt;img src=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457.png&#34;
 	width=&#34;1246&#34;
 	height=&#34;335&#34;
-	srcset=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609154457_hue8b255f48f5d8ed65eda61d25f570d3f_44400_480x0_resize_box_3.png 480w, http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609154457_hue8b255f48f5d8ed65eda61d25f570d3f_44400_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457_hue8b255f48f5d8ed65eda61d25f570d3f_44400_480x0_resize_box_3.png 480w, http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457_hue8b255f48f5d8ed65eda61d25f570d3f_44400_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
@@ -161,9 +161,9 @@
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;DDB&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$RD_OPTION_PG_DATNAME_DST&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tr &lt;span class=&#34;s1&#34;&gt;&amp;#39;[:upper:]&amp;#39;&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;[:lower:]&amp;#39;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;S_PORT&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;5433&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Проверяем существование базы данных&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;db_exist&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;/usr/lib/postgresql/15/bin/psql -U citizix_user -p &lt;span class=&#34;nv&#34;&gt;$S_PORT&lt;/span&gt; -h &lt;span class=&#34;nv&#34;&gt;$RD_OPTION_PG_DISTANATION_HOST&lt;/span&gt; -lqt &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; cut -d &lt;span class=&#34;se&#34;&gt;\|&lt;/span&gt; -f &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep -wq &lt;span class=&#34;nv&#34;&gt;$DDB&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Проверяем &lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -n &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$db_exist&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;База данных &amp;#39;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$DDB&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#39; существует. Удаление...&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    /usr/lib/postgresql/15/bin/dropdb -U citizix_user -h &lt;span class=&#34;nv&#34;&gt;$RD_OPTION_PG_DISTANATION_HOST&lt;/span&gt; -p &lt;span class=&#34;nv&#34;&gt;$S_PORT&lt;/span&gt; -f &lt;span class=&#34;nv&#34;&gt;$DDB&lt;/span&gt;
@@ -230,7 +230,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/usr/lib/postgresql/15/bin/pg_restore -h &lt;span class=&#34;nv&#34;&gt;$RD_OPTION_PG_DISTANATION_HOST&lt;/span&gt; -p &lt;span class=&#34;nv&#34;&gt;$S_PORT&lt;/span&gt; -U citizix_user -j &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt; -d &lt;span class=&#34;nv&#34;&gt;$DDB&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$DUMPFOLDER&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Проверяем успешность создания базы данных&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Проверяем &lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$?&lt;/span&gt; -eq &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;База данных &amp;#39;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$DDB&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#39; успешно восстановлена.&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;
@@ -305,10 +305,10 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;итого&#34;&gt;Итого
 &lt;/h3&gt;&lt;p&gt;Доступен весь вывод консоли, удобно использовать при траблшутинге.
-&lt;img src=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609155612.png&#34;
+&lt;img src=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612.png&#34;
 	width=&#34;1186&#34;
 	height=&#34;614&#34;
-	srcset=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609155612_hu535522ced4909a2edea654cf01444c91_117810_480x0_resize_box_3.png 480w, http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609155612_hu535522ced4909a2edea654cf01444c91_117810_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612_hu535522ced4909a2edea654cf01444c91_117810_480x0_resize_box_3.png 480w, http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612_hu535522ced4909a2edea654cf01444c91_117810_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
@@ -318,10 +318,10 @@
 	
 &gt;
 База скопирована, временные файлы удалены
-&lt;img src=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/2024-06-09-15-52-38.png&#34;
+&lt;img src=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38.png&#34;
 	width=&#34;405&#34;
 	height=&#34;356&#34;
-	srcset=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/2024-06-09-15-52-38_hu85d783b8f27debf426e9acfeb8f78ccb_31037_480x0_resize_box_3.png 480w, http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/2024-06-09-15-52-38_hu85d783b8f27debf426e9acfeb8f78ccb_31037_1024x0_resize_box_3.png 1024w&#34;
+	srcset=&#34;http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38_hu85d783b8f27debf426e9acfeb8f78ccb_31037_480x0_resize_box_3.png 480w, http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38_hu85d783b8f27debf426e9acfeb8f78ccb_31037_1024x0_resize_box_3.png 1024w&#34;
 	loading=&#34;lazy&#34;
 	
 	
