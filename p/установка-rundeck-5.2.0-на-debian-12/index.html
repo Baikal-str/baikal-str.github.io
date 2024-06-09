@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Rundeck — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows. Мы использовали Rundeck для предоставления разработчикам возможности копировать и актуализировать свои базы данных в dev-среде. Разработчик входил по LDAP на веб-ресурс и, задав вводные данные (из списка либо вручную), запускал задачу для копирования базы данных. Это высвободило рабочее время для DBA. Установка Rundeck 5.">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Rundeck — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows. Установка Rundeck 5.2.0 на Debian 12 Обновляем ОС 1 sudo apt -qq update -y &amp;&amp; sudo apt -qq upgrade -y Устанавливаем Java 1 sudo apt install default-jre Проверяем установку Java 1 java --version Так как в РФ напрямую недоступно ПО, скачиваем по VPN с официального сайта deb-пакет.">
 <title>Установка Rundeck 5.2.0 на Debian 12</title>
 
 <link rel='canonical' href='http://localhost:1313/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/'>
 
 <link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="Установка Rundeck 5.2.0 на Debian 12">
-<meta property='og:description' content="Rundeck — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows. Мы использовали Rundeck для предоставления разработчикам возможности копировать и актуализировать свои базы данных в dev-среде. Разработчик входил по LDAP на веб-ресурс и, задав вводные данные (из списка либо вручную), запускал задачу для копирования базы данных. Это высвободило рабочее время для DBA. Установка Rundeck 5.">
+<meta property='og:description' content="Rundeck — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows. Установка Rundeck 5.2.0 на Debian 12 Обновляем ОС 1 sudo apt -qq update -y &amp;&amp; sudo apt -qq upgrade -y Устанавливаем Java 1 sudo apt install default-jre Проверяем установку Java 1 java --version Так как в РФ напрямую недоступно ПО, скачиваем по VPN с официального сайта deb-пакет.">
 <meta property='og:url' content='http://localhost:1313/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/'>
 <meta property='og:site_name' content='Комната инженера | Ivan Gonyak'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='rundeck' /><meta property='article:tag' content='debian' /><meta property='article:tag' content='linux' /><meta property='article:published_time' content='2024-05-18T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2024-05-18T00:00:00&#43;00:00'/><meta property='og:image' content='http://localhost:1313/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/20240518220659.png' />
 <meta name="twitter:title" content="Установка Rundeck 5.2.0 на Debian 12">
-<meta name="twitter:description" content="Rundeck — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows. Мы использовали Rundeck для предоставления разработчикам возможности копировать и актуализировать свои базы данных в dev-среде. Разработчик входил по LDAP на веб-ресурс и, задав вводные данные (из списка либо вручную), запускал задачу для копирования базы данных. Это высвободило рабочее время для DBA. Установка Rundeck 5."><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="Rundeck — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows. Установка Rundeck 5.2.0 на Debian 12 Обновляем ОС 1 sudo apt -qq update -y &amp;&amp; sudo apt -qq upgrade -y Устанавливаем Java 1 sudo apt install default-jre Проверяем установку Java 1 java --version Так как в РФ напрямую недоступно ПО, скачиваем по VPN с официального сайта deb-пакет."><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='http://localhost:1313/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/20240518220659.png' />
     <link rel="shortcut icon" href="/icons8-console-96.png" />
 
@@ -366,7 +366,6 @@
     
     
     <p><strong>Rundeck</strong> — это программное обеспечение для управления автоматизацией операций. Оно позволяет создавать, планировать и управлять задачами автоматизации в инфраструктуре. Автоматизация возможна как в Linux-среде, так и в Windows.</p>
-<p>Мы использовали Rundeck для предоставления разработчикам возможности копировать и актуализировать свои базы данных в dev-среде. Разработчик входил по LDAP на веб-ресурс и, задав вводные данные (из списка либо вручную), запускал задачу для копирования базы данных. Это высвободило рабочее время для DBA.</p>
 <h2 id="установка-rundeck-520-на-debian-12">Установка Rundeck 5.2.0 на Debian 12
 </h2><h3 id="обновляем-ос">Обновляем ОС
 </h3><div class="highlight"><div class="chroma">
@@ -446,7 +445,7 @@
 <pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">nano /etc/rundeck/project.properties
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">nano /etc/rundeck/rundeck-config.properties
 </span></span></code></pre></td></tr></table>
 </div>
 </div><p><img src="/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/20240518215149.png"
@@ -559,6 +558,39 @@
     
 
     
+
+<aside class="related-content--wrapper">
+    <h2 class="section-title">Related content</h2>
+    <div class="related-content">
+        <div class="flex article-list--tile">
+            
+                
+<article class="has-image">
+    <a href="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D1%87%D0%B5%D1%80%D0%B5%D0%B7-rundeck/20240609155015.ac5f13583a63decf6bbe9beec7814b60_hua9aa59a9588b6f99a36b65cb2dc76599_116348_250x150_fill_box_smart1_3.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post Копирование базы данных PostgreSQL через Rundeck"
+                        
+                        data-hash="md5-rF8TWDpj3s9rvpvux4FLYA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Копирование базы данных PostgreSQL через Rundeck</h2>
+        </div>
+    </a>
+</article>
+
+            
+        </div>
+    </div>
+</aside>
 
      
     
