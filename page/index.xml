@@ -26,9 +26,9 @@
 &lt;/h2&gt;&lt;hr&gt;
 &lt;h2 id=&#34;основные-направления-моей-деятельности&#34;&gt;Основные направления моей деятельности:
 &lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;DBOps и администрироване Microsoft SQL Server, PostgreSQL, Redis.&lt;/li&gt;
+&lt;li&gt;DBOps и администрирование PostgreSQL, Microsoft SQL Server, Redis.&lt;/li&gt;
 &lt;li&gt;Автоматизация развёртывания кластерных решений с использованием Ansible, Terraform.&lt;/li&gt;
-&lt;li&gt;Автоматизация различных задач на скриптах PowerShell и Bash.&lt;/li&gt;
+&lt;li&gt;Автоматизация различных задач на скриптах Bash и PowerShell.&lt;/li&gt;
 &lt;li&gt;Организация мониторинга инфраструктуры и показателей информационных систем и платформ в частности на базе Prometheus/Zabbix, Grafana.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
@@ -47,8 +47,9 @@
 &lt;/ul&gt;
 &lt;h3 id=&#34;системы-управления-базами-данных&#34;&gt;Системы управления базами данных
 &lt;/h3&gt;&lt;ul&gt;
-&lt;li&gt;SQL Server, AlwaysOn.&lt;/li&gt;
+&lt;li&gt;SQL Server (AlwaysOn)&lt;/li&gt;
 &lt;li&gt;PostgreSQL(Patroni, Etcd, PgBouncer)&lt;/li&gt;
+&lt;li&gt;MySQL (InnoDB Cluster)&lt;/li&gt;
 &lt;li&gt;Redis&lt;/li&gt;
 &lt;/ul&gt;
 </description>
