@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis. Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате: 1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.">
+<title>Фильтры Logstash для сбора логов баз данных в ELK</title>
+
+<link rel='canonical' href='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/'>
+
+<link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="Фильтры Logstash для сбора логов баз данных в ELK">
+<meta property='og:description' content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis. Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате: 1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.">
+<meta property='og:url' content='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/'>
+<meta property='og:site_name' content='Комната инженера | Ivan Gonyak'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='ELK' /><meta property='article:tag' content='Logstash' /><meta property='article:tag' content='mysql' /><meta property='article:tag' content='postgresql' /><meta property='article:tag' content='patroni' /><meta property='article:tag' content='redis' /><meta property='article:tag' content='clickhouse' /><meta property='article:published_time' content='2024-11-21T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2024-11-21T00:00:00&#43;00:00'/><meta property='og:image' content='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407.png' />
+<meta name="twitter:title" content="Фильтры Logstash для сбора логов баз данных в ELK">
+<meta name="twitter:description" content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis. Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате: 1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S."><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407.png' />
+    <link rel="shortcut icon" href="/icons8-console-96.png" />
+
+  
+
+
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="/">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/photo_huaf4de06833b91f6f4e28988eac97ec63_75764_300x0_resize_q75_box.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+                    <span class="emoji">💻</span>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="/">Комната инженера | Ivan Gonyak</a></h1>
+            <h2 class="site-description">IT engineer. Блог посвященный Linux, DBA, DBOps.</h2>
+        </div>
+    </header><ol class="menu-social">
+            
+                <li>
+                    <a 
+                        href='https://github.com/Baikal-str'
+                        target="_blank"
+                        title="GitHub"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://t.me/baikal_str'
+                        target="_blank"
+                        title="Telegram"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-telegram"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4" /></svg>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a 
+                        href='https://vk.com/st_vano'
+                        target="_blank"
+                        title="VK"
+                        rel="me"
+                    >
+                        
+                        
+                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-vk"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 19h-4a8 8 0 0 1 -8 -8v-5h4v5a4 4 0 0 0 4 4h0v-9h4v4.5l.03 0a4.531 4.531 0 0 0 3.97 -4.496h4l-.342 1.711a6.858 6.858 0 0 1 -3.658 4.789h0a5.34 5.34 0 0 1 3.566 4.111l.434 2.389h0h-4a4.531 4.531 0 0 0 -3.97 -4.496v4.5z" /></svg>
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+        <li >
+            <a href='/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Главная</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/%D0%BE%D0%B1%D0%BE-%D0%BC%D0%BD%D0%B5/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>Обо мне</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Архив</span>
+            </a>
+        </li>
+        
+        
+        <li >
+            <a href='/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Поиск</span>
+            </a>
+        </li>
+        
+        <li class="menu-bottom-section">
+            <ol class="menu">
+
+                
+                    <li id="dark-mode-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                        <span>Dark Mode</span>
+                    </li>
+                
+            </ol>
+        </li>
+    </ol>
+</aside>
+
+    
+
+            <main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/">
+                <img src="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu65b8741f9e04ade1060e02dfec487d02_93585_800x0_resize_box_3.png"
+                        srcset="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu65b8741f9e04ade1060e02dfec487d02_93585_800x0_resize_box_3.png 800w, /p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu65b8741f9e04ade1060e02dfec487d02_93585_1600x0_resize_box_3.png 1600w"
+                        width="800" 
+                        height="200" 
+                        loading="lazy"
+                        alt="Featured image of post Фильтры Logstash для сбора логов баз данных в ELK" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/elk/" >
+                ELK
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/">Фильтры Logstash для сбора логов баз данных в ELK</a>
+        </h2>
+    
+        
+    </div>
+
+    
+    
+    
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 21, 2024</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>Для централизованного хранения логов СУБД использую ELK stack.
+Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis.</p>
+<p>Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">logging_collector = on              # Включает сбор логов
+</span></span><span class="line"><span class="cl">log_destination = &#39;csvlog&#39;          # Формат логов - CSV
+</span></span><span class="line"><span class="cl">log_directory = &#39;log&#39;               # Папка для хранения логов
+</span></span><span class="line"><span class="cl">log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.csv&#39;  # Имя файла логов
+</span></span><span class="line"><span class="cl">log_rotation_age = 1d               # Интервал ротации логов (1 день)
+</span></span><span class="line"><span class="cl">log_rotation_size = 100MB            # Максимальный размер файла логов
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Фильтр в конфигурации Logstash:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Фильтр для PostgreSQL логов</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">if [type] == &#34;postgresql_csv_log&#34; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">csv {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">separator =&gt; &#34;,&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">columns =&gt; [</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;timestamp&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;database&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;pid&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;client_addr&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;session_id&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;session_line_num&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;command_tag&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;session_start_time&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;virtual_transaction_id&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;transaction_id&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;error_severity&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;sql_state_code&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;events&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;detail&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;hint&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;internal_query&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;internal_query_pos&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;context&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;query&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;query_pos&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;location&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;application_name&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;backend_type&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;leader_pid&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;operationid&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">quote_char =&gt; &#39;&#34;&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">remove_field =&gt; [&#34;message&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># Обработка временных меток</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">date {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; [&#34;timestamp&#34;, &#34;yyyy-MM-dd HH:mm:ss.SSS&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">timezone =&gt; &#34;Europe/Moscow&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">target =&gt; &#34;@timestamp&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">remove_field =&gt; [&#34;timestamp&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># Обработка многострочных сообщений</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">mutate {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">gsub =&gt; [&#34;message&#34;, &#34;\n&#34;, &#34; &#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Фильтр для Patroni:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Фильтр для Patroni логов</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">if [type] == &#34;patroni_log&#34; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">grok {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; { &#34;message&#34; =&gt; &#34;%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:loglevel}: %{GREEDYDATA:events}&#34; }</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">date {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; [ &#34;timestamp&#34;, &#34;yyyy-MM-dd HH:mm:ss,SSS&#34; ]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">target =&gt; &#34;@timestamp&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Фильтр для MySQL:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Фильтр для MySQL логов</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">if [type] == &#34;mysql_log&#34; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">grok {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;message&#34;</span><span class="w"> </span><span class="l">=&gt; [</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="s2">&#34;%{TIMESTAMP_ISO8601:timestamp}\s%{NUMBER:thread_id}\s\[%{WORD:loglevel}\]\s\[%{DATA:error_code}\]\s\[%{DATA:component}\]\s%{GREEDYDATA:log_message}&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">remove_field =&gt; [&#34;message&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="c"># Преобразуем timestamp в стандартный формат</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">date {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; [&#34;timestamp&#34;, &#34;yyyy-MM-dd&#39;T&#39;HH:mm:ss.SSSSSSZ&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">target =&gt; &#34;@timestamp&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Фильтр для ClickHouse:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Фильтр для ClickHouse логов</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">if [type] == &#34;clickhouse_log&#34; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">grok {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;message&#34;</span><span class="w"> </span><span class="l">=&gt; [</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="s2">&#34;%{YEAR:year}.%{MONTHNUM:month}.%{MONTHDAY:day} %{HOUR:hour}:%{MINUTE:minute}:%{SECOND:second}\.%{INT:microseconds}\s\[\s*%{NUMBER:thread_id}\s*\]\s{}\s\&lt;%{WORD:loglevel}\&gt;\s%{WORD:application}:\s*%{GREEDYDATA:log_message}&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">mutate {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">add_field =&gt; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;timestamp&#34;</span><span class="w"> </span><span class="l">=&gt; &#34;%{year}-%{month}-%{day} %{hour}:%{minute}:%{second}.%{microseconds}&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">remove_field =&gt; [&#34;year&#34;, &#34;month&#34;, &#34;day&#34;, &#34;hour&#34;, &#34;minute&#34;, &#34;second&#34;, &#34;microseconds&#34;, &#34;message&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Фильтр для Redis:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="c"># Фильтр для Redis логов</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="l">if [type] == &#34;redis_log&#34; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">grok {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="s2">&#34;message&#34;</span><span class="w"> </span><span class="l">=&gt; [</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="s2">&#34;%{NUMBER:pid}:%{NOTSPACE:log_type} \(%{NUMBER:unix_timestamp:int}\) %{GREEDYDATA:events}&#34;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="s2">&#34;%{NUMBER:pid}:%{WORD:log_type} %{MONTHDAY} %{MONTH} %{YEAR} %{TIME} %{DATA:symbol} %{GREEDYDATA:events}&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">remove_field =&gt; [&#34;message&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c"># Применение фильтра date к каждому полю с временными метками</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">date {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">match =&gt; [ &#34;timestamp&#34;, &#34;yyyy-MM-dd HH:mm:ss,SSS&#34; ]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">target =&gt; &#34;@timestamp&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="l">mutate {</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="l">remove_field =&gt; [&#34;@version&#34;, &#34;path&#34;, &#34;host&#34;]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span>}<span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span>}<span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><p>Проверка на валидность конфигураций Logstash</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl">sudo /usr/share/logstash/bin/logstash --config.test_and_exit -f /etc/logstash/conf.d/
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>Полезный сервис для диагностики и отладки фильтров <code>grok</code> <a class="link" href="https://grokdebugger.com/"  target="_blank" rel="noopener"
+    >Grok Debugger</a></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/elk/">ELK</a>
+        
+            <a href="/tags/logstash/">Logstash</a>
+        
+            <a href="/tags/mysql/">Mysql</a>
+        
+            <a href="/tags/postgresql/">Postgresql</a>
+        
+            <a href="/tags/patroni/">Patroni</a>
+        
+            <a href="/tags/redis/">Redis</a>
+        
+            <a href="/tags/clickhouse/">Clickhouse</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2024 Ivan Gonyak
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.26.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
+            >
+
+            </main>
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
