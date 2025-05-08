@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis. Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате: 1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis.\nДля PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате:\n1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.csv&#39; # Имя файла логов log_rotation_age = 1d # Интервал ротации логов (1 день) log_rotation_size = 100MB # Максимальный размер файла логов Фильтр в конфигурации Logstash:\n">
 <title>Фильтры Logstash для сбора логов баз данных в ELK</title>
 
 <link rel='canonical' href='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/'>
 
 <link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="Фильтры Logstash для сбора логов баз данных в ELK">
-<meta property='og:description' content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis. Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате: 1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.">
+<meta property='og:description' content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis.\nДля PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате:\n1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.csv&#39; # Имя файла логов log_rotation_age = 1d # Интервал ротации логов (1 день) log_rotation_size = 100MB # Максимальный размер файла логов Фильтр в конфигурации Logstash:\n">
 <meta property='og:url' content='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/'>
 <meta property='og:site_name' content='Комната инженера | Ivan Gonyak'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='ELK' /><meta property='article:tag' content='Logstash' /><meta property='article:tag' content='mysql' /><meta property='article:tag' content='postgresql' /><meta property='article:tag' content='patroni' /><meta property='article:tag' content='redis' /><meta property='article:tag' content='clickhouse' /><meta property='article:published_time' content='2024-11-21T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2024-11-21T00:00:00&#43;00:00'/><meta property='og:image' content='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407.png' />
 <meta name="twitter:title" content="Фильтры Logstash для сбора логов баз данных в ELK">
-<meta name="twitter:description" content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis. Для PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате: 1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S."><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="Для централизованного хранения логов СУБД использую ELK stack. Порой возникают сложности для правильного парсинга логов, далее в заметке разберём основные моменты настройки конфигурации фильтров Logstash для таких СУБД как: PostgreSQL, Patroni, MySQL, ClickHouse, Redis.\nДля PostgreSQL в параметрах обычно указываю сохранение логов в CSV формате:\n1 2 3 4 5 6 logging_collector = on # Включает сбор логов log_destination = &#39;csvlog&#39; # Формат логов - CSV log_directory = &#39;log&#39; # Папка для хранения логов log_filename = &#39;postgresql-%Y-%m-%d_%H%M%S.csv&#39; # Имя файла логов log_rotation_age = 1d # Интервал ротации логов (1 день) log_rotation_size = 100MB # Максимальный размер файла логов Фильтр в конфигурации Logstash:\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='http://localhost:1313/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407.png' />
     <link rel="shortcut icon" href="/icons8-console-96.png" />
-
-  
-
 
     </head>
     <body class="
@@ -62,7 +59,7 @@
                     
                     
                         
-                        <img src="/img/photo_huaf4de06833b91f6f4e28988eac97ec63_75764_300x0_resize_q75_box.jpg" width="300"
+                        <img src="/img/photo_hu_a9e9492b4500583e.jpg" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -245,8 +242,8 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/">
-                <img src="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu65b8741f9e04ade1060e02dfec487d02_93585_800x0_resize_box_3.png"
-                        srcset="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu65b8741f9e04ade1060e02dfec487d02_93585_800x0_resize_box_3.png 800w, /p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu65b8741f9e04ade1060e02dfec487d02_93585_1600x0_resize_box_3.png 1600w"
+                <img src="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu_babf5f1ac038c39.png"
+                        srcset="/p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu_babf5f1ac038c39.png 800w, /p/%D1%84%D0%B8%D0%BB%D1%8C%D1%82%D1%80%D1%8B-logstash-%D0%B4%D0%BB%D1%8F-%D1%81%D0%B1%D0%BE%D1%80%D0%B0-%D0%BB%D0%BE%D0%B3%D0%BE%D0%B2-%D0%B1%D0%B0%D0%B7-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2-elk/20241123141407_hu_266aac058f7f6cd5.png 1600w"
                         width="800" 
                         height="200" 
                         loading="lazy"
@@ -628,7 +625,9 @@
     <section class="copyright">
         &copy; 
         
-        2024 Ivan Gonyak
+            2024 - 
+        
+        2025 Ivan Gonyak
     </section>
     
     <section class="powerby">

@@ -1,23 +1,20 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Задача: Копирование базы данных PostgreSQL используя Rundeck Запрос Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки. Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков. В ОС с Rundeck установлен postgresql-client. pg-prod - Сервер СУБД PostgreSQL продуктивный pg-dev - Сервер СУБД PostgreSQL тестовый (работает на порту 5433) citizix_user - пользователь с правами чтения на продуктивном сервере Задача разбита на 8 шагов: Проверить наличие старого dump файла Проверить наличие БД на сервере-источнике Создать dump БД Удалить базу данных на сервере назначения Создать пустую базу на сервере назначения Восстановить базу данных на сервере назначения Выполнить Vacuumdb Удалить dump файл Вводные параметры Опции:">
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="Задача: Копирование базы данных PostgreSQL используя Rundeck Запрос Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки. Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков. В ОС с Rundeck установлен postgresql-client.\npg-prod - Сервер СУБД PostgreSQL продуктивный pg-dev - Сервер СУБД PostgreSQL тестовый (работает на порту 5433) citizix_user - пользователь с правами чтения на продуктивном сервере Задача разбита на 8 шагов:\nПроверить наличие старого dump файла Проверить наличие БД на сервере-источнике Создать dump БД Удалить базу данных на сервере назначения Создать пустую базу на сервере назначения Восстановить базу данных на сервере назначения Выполнить Vacuumdb Удалить dump файл Вводные параметры Опции:\n">
 <title>Копирование базы данных PostgreSQL используя Rundeck</title>
 
 <link rel='canonical' href='http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/'>
 
 <link rel="stylesheet" href="/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css"><meta property='og:title' content="Копирование базы данных PostgreSQL используя Rundeck">
-<meta property='og:description' content="Задача: Копирование базы данных PostgreSQL используя Rundeck Запрос Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки. Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков. В ОС с Rundeck установлен postgresql-client. pg-prod - Сервер СУБД PostgreSQL продуктивный pg-dev - Сервер СУБД PostgreSQL тестовый (работает на порту 5433) citizix_user - пользователь с правами чтения на продуктивном сервере Задача разбита на 8 шагов: Проверить наличие старого dump файла Проверить наличие БД на сервере-источнике Создать dump БД Удалить базу данных на сервере назначения Создать пустую базу на сервере назначения Восстановить базу данных на сервере назначения Выполнить Vacuumdb Удалить dump файл Вводные параметры Опции:">
+<meta property='og:description' content="Задача: Копирование базы данных PostgreSQL используя Rundeck Запрос Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки. Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков. В ОС с Rundeck установлен postgresql-client.\npg-prod - Сервер СУБД PostgreSQL продуктивный pg-dev - Сервер СУБД PostgreSQL тестовый (работает на порту 5433) citizix_user - пользователь с правами чтения на продуктивном сервере Задача разбита на 8 шагов:\nПроверить наличие старого dump файла Проверить наличие БД на сервере-источнике Создать dump БД Удалить базу данных на сервере назначения Создать пустую базу на сервере назначения Восстановить базу данных на сервере назначения Выполнить Vacuumdb Удалить dump файл Вводные параметры Опции:\n">
 <meta property='og:url' content='http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/'>
 <meta property='og:site_name' content='Комната инженера | Ivan Gonyak'>
 <meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='rundeck' /><meta property='article:tag' content='debian' /><meta property='article:tag' content='linux' /><meta property='article:tag' content='postgresql' /><meta property='article:published_time' content='2024-06-09T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2024-06-09T00:00:00&#43;00:00'/><meta property='og:image' content='http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015.png' />
 <meta name="twitter:title" content="Копирование базы данных PostgreSQL используя Rundeck">
-<meta name="twitter:description" content="Задача: Копирование базы данных PostgreSQL используя Rundeck Запрос Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки. Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков. В ОС с Rundeck установлен postgresql-client. pg-prod - Сервер СУБД PostgreSQL продуктивный pg-dev - Сервер СУБД PostgreSQL тестовый (работает на порту 5433) citizix_user - пользователь с правами чтения на продуктивном сервере Задача разбита на 8 шагов: Проверить наличие старого dump файла Проверить наличие БД на сервере-источнике Создать dump БД Удалить базу данных на сервере назначения Создать пустую базу на сервере назначения Восстановить базу данных на сервере назначения Выполнить Vacuumdb Удалить dump файл Вводные параметры Опции:"><meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="Задача: Копирование базы данных PostgreSQL используя Rundeck Запрос Необходимо предоставить разработчикам возможность копировать БД из прода в среду разработки. Решили использовать Rundeck, упаковать выполнения команд в web, для удобства разработчиков. В ОС с Rundeck установлен postgresql-client.\npg-prod - Сервер СУБД PostgreSQL продуктивный pg-dev - Сервер СУБД PostgreSQL тестовый (работает на порту 5433) citizix_user - пользователь с правами чтения на продуктивном сервере Задача разбита на 8 шагов:\nПроверить наличие старого dump файла Проверить наличие БД на сервере-источнике Создать dump БД Удалить базу данных на сервере назначения Создать пустую базу на сервере назначения Восстановить базу данных на сервере назначения Выполнить Vacuumdb Удалить dump файл Вводные параметры Опции:\n"><meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content='http://localhost:1313/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015.png' />
     <link rel="shortcut icon" href="/icons8-console-96.png" />
-
-  
-
 
     </head>
     <body class="
@@ -62,7 +59,7 @@
                     
                     
                         
-                        <img src="/img/photo_huaf4de06833b91f6f4e28988eac97ec63_75764_300x0_resize_q75_box.jpg" width="300"
+                        <img src="/img/photo_hu_a9e9492b4500583e.jpg" width="300"
                             height="300" class="site-logo" loading="lazy" alt="Avatar">
                     
                 
@@ -294,8 +291,8 @@
     <header class="article-header">
         <div class="article-image">
             <a href="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/">
-                <img src="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015_hua9aa59a9588b6f99a36b65cb2dc76599_116348_800x0_resize_box_3.png"
-                        srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015_hua9aa59a9588b6f99a36b65cb2dc76599_116348_800x0_resize_box_3.png 800w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015_hua9aa59a9588b6f99a36b65cb2dc76599_116348_1600x0_resize_box_3.png 1600w"
+                <img src="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015_hu_d0a8baadc5484cd4.png"
+                        srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015_hu_d0a8baadc5484cd4.png 800w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155015_hu_cebb9e4cc0089a39.png 1600w"
                         width="800" 
                         height="337" 
                         loading="lazy"
@@ -401,7 +398,7 @@
 <img src="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457.png"
 	width="1246"
 	height="335"
-	srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457_hue8b255f48f5d8ed65eda61d25f570d3f_44400_480x0_resize_box_3.png 480w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457_hue8b255f48f5d8ed65eda61d25f570d3f_44400_1024x0_resize_box_3.png 1024w"
+	srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457_hu_ec7a9eaa04ec399e.png 480w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609154457_hu_7b87cfb9817cec47.png 1024w"
 	loading="lazy"
 	
 	
@@ -665,7 +662,7 @@
 <img src="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612.png"
 	width="1186"
 	height="614"
-	srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612_hu535522ced4909a2edea654cf01444c91_117810_480x0_resize_box_3.png 480w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612_hu535522ced4909a2edea654cf01444c91_117810_1024x0_resize_box_3.png 1024w"
+	srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612_hu_73312d703080163.png 480w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/20240609155612_hu_87bceaf5d6bd97b6.png 1024w"
 	loading="lazy"
 	
 	
@@ -678,7 +675,7 @@
 <img src="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38.png"
 	width="405"
 	height="356"
-	srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38_hu85d783b8f27debf426e9acfeb8f78ccb_31037_480x0_resize_box_3.png 480w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38_hu85d783b8f27debf426e9acfeb8f78ccb_31037_1024x0_resize_box_3.png 1024w"
+	srcset="/p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38_hu_b7aabab7a316e681.png 480w, /p/%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B1%D0%B0%D0%B7%D1%8B-%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85-postgresql-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D1%8F-rundeck/2024-06-09-15-52-38_hu_69e0544ed176f540.png 1024w"
 	loading="lazy"
 	
 	
@@ -739,7 +736,7 @@
         
         
             <div class="article-image">
-                <img src="/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/20240518220659.1844b544a968bf23e82b9e98ebc7d6e2_hu20326199076f57eae73c1f3050ce8348_67046_250x150_fill_box_smart1_3.png" 
+                <img src="/p/%D1%83%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0-rundeck-5.2.0-%D0%BD%D0%B0-debian-12/20240518220659.1844b544a968bf23e82b9e98ebc7d6e2_hu_a585f565881ff4d8.png" 
                         width="250" 
                         height="150" 
                         loading="lazy"
@@ -752,6 +749,30 @@
 
         <div class="article-details">
             <h2 class="article-title">Установка Rundeck 5.2.0 на Debian 12</h2>
+        </div>
+    </a>
+</article>
+
+            
+                
+<article class="has-image">
+    <a href="/p/%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-postgresql-%D1%81-%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8-16.8-%D0%B4%D0%BE-16.9-%D0%BF%D0%BE%D1%88%D0%B0%D0%B3%D0%BE%D0%B2%D0%BE%D0%B5-%D1%80%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%D0%BE%D0%B1%D0%BD%D0%BE%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5-postgresql-%D1%81-%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D0%B8-16.8-%D0%B4%D0%BE-16.9-%D0%BF%D0%BE%D1%88%D0%B0%D0%B3%D0%BE%D0%B2%D0%BE%D0%B5-%D1%80%D1%83%D0%BA%D0%BE%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%BE/postgres-1024x574.a9def9c41e446be510fd1b0bb529a8ad_hu_402e04aa9337fd73.png" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy"
+                        alt="Featured image of post Обновление PostgreSQL с версии 16.8 до 16.9: пошаговое руководство"
+                        
+                        data-hash="md5-qd75xB5Ea&#43;UQ/RsLtSmorQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Обновление PostgreSQL с версии 16.8 до 16.9: пошаговое руководство</h2>
         </div>
     </a>
 </article>
@@ -770,7 +791,9 @@
     <section class="copyright">
         &copy; 
         
-        2024 Ivan Gonyak
+            2024 - 
+        
+        2025 Ivan Gonyak
     </section>
     
     <section class="powerby">
